@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "rm(list=ls())\n\noptions(warn=-1) #Turn warning off\n\nrankhospital <- function(state, outcome, num=\"best\"){\n     ## Read outcome data\n     df <- read.csv(\"outcome-of-care-measures.csv\", colClasses = \"character\")\n     df_extract <- as.data.frame(cbind(\"Hospital name\" = df[,2],\"State\"= df[,7],\"heart attack\"=as.numeric(df[,11]),\"heart failure\"=as.numeric(df[,17]), \"pneumonia\"=as.numeric(df[,23])))\n     ## Check that state and outcome are valid\n     if(!is.element(state, df_extract[,2])){\n          return(paste(\"Input state\",state,\"is invalid.\",sep=\" \"))\n     }\n     else if(!is.element(outcome, names(df_extract))){\n          return(paste(\"Input outcome\",outcome,\"is invalid.\",sep=\" \"))\n     }else{\n          df <- df_extract[,c(\"Hospital name\",\"State\",outcome)]\n          df <- df[complete.cases(df),]\n     }\n     ## Return hospital name in that state with lowest 30-day death rate\n     list <- subset(df,State == state)\n     list[,3] <- as.numeric(as.character(list[,3]))\n     list <- list[order(list[,3], list[,1]),]\n     list$Rank <- seq.int(nrow(list))\n     if(num==\"best\"){\n          return(as.character(list[list$Rank==1,][1,1]))\n     }\n     else if(num==\"worst\"){\n          return(as.character(list[list$Rank==nrow(list),][1,1]))\n     }\n     else if(num>nrow(list)){\n          return(NA)\n     }\n     else{\n          return(as.character(list[list$Rank==num,][1,1]))\n     }\n}\n\n##ANSWER CHECK\nrankhospital(\"TX\",\"heart failure\", 4) #RESULT: [1] \"DETAR HOSPITAL NAVARRO\", CORRECT\nrankhospital(\"MD\",\"heart attack\", \"worst\") #RESULT: [1] \"HARFORD MEMORIAL HOSPITAL\", CORRECT\nrankhospital(\"MN\",\"heart attack\", 5000) #RESULT: [1] NA, CORRECT\n\n",
+    "created" : 1509293065522.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4092844240",
+    "id" : "ED764AD6",
+    "lastKnownWriteTime" : 1509293154,
+    "last_content_update" : 1509293154197,
+    "path" : "E:/OneDrive/Coursera Data Science/Coursera Week4 Project/rankhospital.r",
+    "project_path" : "rankhospital.r",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 3,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

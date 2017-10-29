@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "rm(list=ls())\n\noptions(warn=-1) #Turn warning off\n\n#Write a function called best that take two arguments: the 2-character abbreviated name of a state and an\n#outcome name. The function reads the outcome-of-care-measures.csv file and returns a character vector\n#with the name of the hospital that has the best (i.e. lowest) 30-day mortality for the specified outcome\n#in that state. The hospital name is the name provided in the Hospital.Name variable. The outcomes can\n#be one of “heart attack”, “heart failure”, or “pneumonia”. Hospitals that do not have data on a particular\n#outcome should be excluded from the set of hospitals when deciding the rankings.\n\n\nbest <- function(state, outcome){\n     ## Read outcome data\n     df <- read.csv(\"outcome-of-care-measures.csv\", colClasses = \"character\")\n     df_extract <- as.data.frame(cbind(\"Hospital name\" = df[,2],\"State\"= df[,7],\"heart attack\"=as.numeric(df[,11]),\"heart failure\"=as.numeric(df[,17]), \"pneumonia\"=as.numeric(df[,23])))\n     ## Check that state and outcome are valid\n     if(!is.element(state, df_extract[,2])){\n          return(paste(\"Input state\",state,\"is invalid.\",sep=\" \"))\n     }\n     else if(!is.element(outcome, names(df_extract))){\n          return(paste(\"Input outcome\",outcome,\"is invalid.\",sep=\" \"))\n     }else{\n          df <- df_extract[,c(\"Hospital name\",\"State\",outcome)]\n          df <- df[complete.cases(df),]\n     }\n     ## Return hospital name in that state with lowest 30-day death rate\n     list <- subset(df,State == state)\n     list[,3] <- as.numeric(as.character(list[,3]))\n     return(as.character(list[which.min(list[,3]),][1,1]))\n}\n\n##ANSWER CHECK\nbest(\"TX\", \"heart attack\") #Result: [1] \"CYPRESS FAIRBANKS MEDICAL CENTER\", CORRECT\nbest(\"TX\", \"heart failure\") #Result: [1] \"FORT DUNCAN MEDICAL CENTER\", CORRECT\nbest(\"MD\", \"heart attack\") #Result: [1] \"JOHNS HOPKINS HOSPITAL, THE\", CORRECT\nbest(\"MD\", \"pneumonia\") #Result: [1] \"GREATER BALTIMORE MEDICAL CENTER\", CORRECT\n",
+    "created" : 1509293043907.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4280850599",
+    "id" : "8BA4A995",
+    "lastKnownWriteTime" : 1509293113,
+    "last_content_update" : 1509293113736,
+    "path" : "E:/OneDrive/Coursera Data Science/Coursera Week4 Project/best.r",
+    "project_path" : "best.r",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "rm(list=ls())\n\ninstall.packages(\"data.table\")\nlibrary(data.table)\noptions(warn=-1) #Turn warning off\n\nrankall <- function(outcome, num = \"best\") {\n     df <- read.csv(\"outcome-of-care-measures.csv\", colClasses = \"character\")\n     \n     df_extract <- as.data.frame(cbind(\"Hospital name\" = df[,2],\"State\"= df[,7],\"heart attack\"=as.numeric(df[,11]),\"heart failure\"=as.numeric(df[,17]), \"pneumonia\"=as.numeric(df[,23])))\n     df_extract[,3] <- as.numeric(as.character(df_extract[,3]))\n     df_extract[,4] <- as.numeric(as.character(df_extract[,4]))\n     df_extract[,5] <- as.numeric(as.character(df_extract[,5]))\n     \n     ## Check that outcome is valid\n     if(!is.element(outcome, names(df_extract))){\n          return(paste(\"Input outcome\",outcome,\"is invalid.\",sep=\" \"))\n     }else{\n          df <- df_extract[,c(\"Hospital name\",\"State\",outcome)]\n          df <- df[order(df[,2], df[,3], df[,1]),]\n          state_list <- sort(unique(df[,2]))\n     }\n     \n     \n     k <- 0\n     for(i in 1:length(state_list)){\n          for(j in 1:nrow(df[df$State==state_list[i],])){\n               df$Rank[j+k] <- j\n          }\n          k <- k + nrow(df[df$State==state_list[i],])\n     }\n     \n     State <- state_list\n     State <- as.data.frame(State)\n     \n     if(num==\"best\"){\n          num <- 1\n          output <- merge(x = df[df$Rank==num,], y = State, by = \"State\", all = TRUE)\n          return(output[,1:2])\n     }\n     else if(num==\"worst\"){\n          df <- df[complete.cases(df),]\n          output <- setDT(df)[, .SD[which.max(eval(parse(text = outcome )))], by=State]\n          output <- as.data.frame(output)\n          return(output[,1:2])\n     }\n     \n     else{\n          output <- merge(x = df[df$Rank==num,], y = State, by = \"State\", all = TRUE)\n          return(output[,1:2])\n     }\n     \n     \n}\n\n##ANSWER CHECK\nhead(rankall(\"heart attack\", 20),10) #CORRECT\ntail(rankall(\"pneumonia\", \"worst\"), 3) #CORRECT\ntail(rankall(\"heart failure\"), 10) #CORRECT",
+    "created" : 1509293138162.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "418250331",
+    "id" : "A40E4D2E",
+    "lastKnownWriteTime" : 1509293798,
+    "last_content_update" : 1509293798185,
+    "path" : "E:/OneDrive/Coursera Data Science/Coursera Week4 Project/rankall.r",
+    "project_path" : "rankall.r",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 4,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
